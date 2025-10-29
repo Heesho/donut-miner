@@ -50,7 +50,6 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -107,7 +106,6 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -141,7 +139,6 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -159,7 +156,6 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -177,7 +173,25 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
+        AddressZero,
+        res.epochId,
+        1861439882,
+        res.price,
+        "https://example.com",
+        {
+          value: res.price,
+        }
+      );
+    res = await multicall.getMiner(AddressZero);
+    expect(res.miner).to.equal(user0.address);
+  });
+
+  it("User0 mines", async function () {
+    console.log("******************************************************");
+    let res = await multicall.getMiner(AddressZero);
+    await miner
+      .connect(user0)
+      .mine(
         AddressZero,
         res.epochId,
         1861439882,
@@ -195,7 +209,6 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -205,24 +218,8 @@ describe("local: test0", function () {
           value: res.price,
         }
       );
-  });
-
-  it("User0 mines", async function () {
-    console.log("******************************************************");
-    let res = await multicall.getMiner(AddressZero);
-    await miner
-      .connect(user0)
-      .mine(
-        user0.address,
-        AddressZero,
-        res.epochId,
-        1861439882,
-        res.price,
-        "https://example.com",
-        {
-          value: res.price,
-        }
-      );
+    res = await multicall.getMiner(AddressZero);
+    await expect(res.miner).to.equal(user0.address);
   });
 
   it("Miner state", async function () {
@@ -270,7 +267,6 @@ describe("local: test0", function () {
     await miner
       .connect(user1)
       .mine(
-        user1.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -280,6 +276,8 @@ describe("local: test0", function () {
           value: res.price,
         }
       );
+    res = await multicall.getMiner(AddressZero);
+    await expect(res.miner).to.equal(user1.address);
   });
 
   it("Miner state", async function () {
@@ -311,7 +309,6 @@ describe("local: test0", function () {
     await miner
       .connect(user2)
       .mine(
-        user2.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -321,6 +318,8 @@ describe("local: test0", function () {
           value: res.price,
         }
       );
+    res = await multicall.getMiner(AddressZero);
+    await expect(res.miner).to.equal(user2.address);
   });
 
   it("Miner state", async function () {
@@ -368,7 +367,6 @@ describe("local: test0", function () {
     await miner
       .connect(user0)
       .mine(
-        user0.address,
         AddressZero,
         res.epochId,
         1861439882,
@@ -378,6 +376,8 @@ describe("local: test0", function () {
           value: res.price,
         }
       );
+    res = await multicall.getMiner(AddressZero);
+    await expect(res.miner).to.equal(user0.address);
   });
 
   it("Miner state", async function () {

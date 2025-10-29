@@ -113,7 +113,7 @@ async function main() {
   // console.log("Starting System Deployment");
   // await deployMiner();
   // await deployMulticall();
-  // await printDeployment();
+  await printDeployment();
 
   /*********** UPDATE getContracts() with new addresses *************/
 

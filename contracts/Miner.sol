@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import {ERC20, ERC20Permit, ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Donut is ERC20, ERC20Permit, ERC20Votes {
@@ -22,9 +24,9 @@ contract Donut is ERC20, ERC20Permit, ERC20Votes {
         emit Donut__Minted(account, amount);
     }
 
-    function burn(address account, uint256 amount) external {
-        _burn(account, amount);
-        emit Donut__Burned(account, amount);
+    function burn(uint256 amount) external {
+        _burn(msg.sender, amount);
+        emit Donut__Burned(msg.sender, amount);
     }
 
     function _afterTokenTransfer(address from, address to, uint256 amount) internal override(ERC20, ERC20Votes) {
@@ -70,8 +72,8 @@ contract Miner is Ownable {
 
     Slot0 internal slot0;
 
+    error Miner__InvalidPayment();
     error Miner__Reentrancy();
-    error Miner__InsufficientPayment();
     error Miner__Expired();
     error Miner__EpochIdMismatch();
     error Miner__MaxPriceExceeded();
@@ -79,8 +81,9 @@ contract Miner is Ownable {
     error Miner__ProviderPayoutFailed();
     error Miner__TreasuryPayoutFailed();
     error Miner__MinerPayoutFailed();
+    error Miner__RefundFailed();
 
-    event Miner__Mined(address indexed from, address indexed to, uint256 amount, string uri);
+    event Miner__Mined(address indexed miner, uint256 price, string uri);
     event Miner__Minted(address indexed miner, uint256 amount);
     event Miner__ProviderFee(address indexed provider, uint256 amount);
     event Miner__TreasuryFee(address indexed treasury, uint256 amount);
@@ -106,19 +109,18 @@ contract Miner is Ownable {
 
         slot0.initPrice = uint192(MIN_INIT_PRICE);
         slot0.startTime = uint40(startTime);
-        slot0.miner = msg.sender;
+        slot0.miner = _treasury;
+        slot0.dps = INITIAL_DPS;
 
         donut = address(new Donut());
     }
 
-    function mine(
-        address miner,
-        address provider,
-        uint256 epochId,
-        uint256 deadline,
-        uint256 maxPrice,
-        string memory uri
-    ) external payable nonReentrant returns (uint256 price) {
+    function mine(address provider, uint256 epochId, uint256 deadline, uint256 maxPrice, string memory uri)
+        external
+        payable
+        nonReentrant
+        returns (uint256 price)
+    {
         if (block.timestamp > deadline) revert Miner__Expired();
 
         Slot0 memory slot0Cache = slot0;
@@ -127,7 +129,7 @@ contract Miner is Ownable {
 
         price = _getPriceFromCache(slot0Cache);
         if (price > maxPrice) revert Miner__MaxPriceExceeded();
-        if (msg.value < price) revert Miner__InsufficientPayment();
+        if (msg.value < price) revert Miner__InvalidPayment();
 
         if (price > 0) {
             uint256 totalFee = price * FEE / DIVISOR;
@@ -157,6 +159,12 @@ contract Miner is Ownable {
             emit Miner__MinerFee(slot0Cache.miner, minerFee);
         }
 
+        uint256 refund = msg.value - price;
+        if (refund > 0) {
+            (bool rs,) = payable(msg.sender).call{value: refund}("");
+            if (!rs) revert Miner__RefundFailed();
+        }
+
         uint256 newInitPrice = price * PRICE_MULTIPLIER / PRECISION;
 
         if (newInitPrice > ABS_MAX_INIT_PRICE) {
@@ -176,13 +184,13 @@ contract Miner is Ownable {
         }
         slot0Cache.initPrice = uint192(newInitPrice);
         slot0Cache.startTime = uint40(block.timestamp);
-        slot0Cache.miner = miner;
+        slot0Cache.miner = msg.sender;
         slot0Cache.dps = _getDpsFromTime(block.timestamp);
         slot0Cache.uri = uri;
 
         slot0 = slot0Cache;
 
-        emit Miner__Mined(msg.sender, miner, price, uri);
+        emit Miner__Mined(msg.sender, price, uri);
 
         return price;
     }
