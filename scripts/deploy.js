@@ -24,7 +24,7 @@ let donut, miner, multicall;
 async function getContracts() {
   miner = await ethers.getContractAt(
     "contracts/Miner.sol:Miner",
-    "0xe4CdE364083504BBe9A304185a6c6e7b26C78b87"
+    "0x3EE441030984ACfeCf17FDa6953bea00a8c53Fa7"
   );
   donut = await ethers.getContractAt(
     "contracts/Miner.sol:Donut",
@@ -32,7 +32,7 @@ async function getContracts() {
   );
   multicall = await ethers.getContractAt(
     "contracts/Multicall.sol:Multicall",
-    "0x72939D832262fFBc9d6B362914B92fAA0Ecf3368"
+    "0x88e52940E62E150619cAa54b1bc51b1103a2EA9F"
   );
 
   console.log("Contracts Retrieved");
@@ -126,7 +126,7 @@ async function main() {
   // await sleep(5000);
   // await verifyMiner();
   // await sleep(5000);
-  await verifyMulticall();
+  // await verifyMulticall();
   // await sleep(5000);
 }
 

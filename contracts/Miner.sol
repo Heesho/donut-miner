@@ -46,11 +46,11 @@ contract Miner is Ownable {
     uint256 public constant PRECISION = 1e18;
     uint256 public constant EPOCH_PERIOD = 1 hours;
     uint256 public constant PRICE_MULTIPLIER = 2e18;
-    uint256 public constant MIN_INIT_PRICE = 0.001 ether;
+    uint256 public constant MIN_INIT_PRICE = 0.0001 ether;
     uint256 public constant ABS_MAX_INIT_PRICE = type(uint192).max;
 
     uint256 public constant INITIAL_DPS = 10 ether;
-    uint256 public constant HALVING_PERIOD = 30 days;
+    uint256 public constant HALVING_PERIOD = 2 days;
     uint256 public constant TAIL_DPS = 0.01 ether;
 
     address public immutable donut;

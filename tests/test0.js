@@ -36,9 +36,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("User0 mines", async function () {
@@ -67,9 +70,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("Forward time", async function () {
@@ -87,9 +93,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("User0 mines", async function () {
@@ -118,9 +127,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("User0 mines", async function () {
@@ -221,9 +233,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("Forward time", async function () {
@@ -241,9 +256,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("User1 mines", async function () {
@@ -272,9 +290,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("Forward time", async function () {
@@ -310,9 +331,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("Forward time", async function () {
@@ -330,9 +354,12 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 
   it("User0 mines", async function () {
@@ -361,8 +388,11 @@ describe("local: test0", function () {
     console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
     console.log("Price: ", divDec(minerStateUser.price));
     console.log("DPS: ", divDec(minerStateUser.nextDps));
-    console.log("User DONUT balance: ", divDec(minerStateUser.donuts));
-    console.log("User ETH balance: ", divDec(minerStateUser.balance));
-    console.log("Treasury ETH balance: ", divDec(minerStateTreasury.balance));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
   });
 });
