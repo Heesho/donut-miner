@@ -7,7 +7,7 @@ const { execPath } = require("process");
 const AddressZero = "0x0000000000000000000000000000000000000000";
 
 let owner, multisig, treasury, user0, user1, user2, user3;
-let miner, multicall;
+let weth, miner, multicall;
 
 describe("local: test0", function () {
   before("Initial set up", async function () {
@@ -16,8 +16,12 @@ describe("local: test0", function () {
     [owner, multisig, treasury, user0, user1, user2, user3] =
       await ethers.getSigners();
 
+    const wethArtifact = await ethers.getContractFactory("Base");
+    weth = await wethArtifact.deploy();
+    console.log("- WETH Initialized");
+
     const minerArtifact = await ethers.getContractFactory("Miner");
-    miner = await minerArtifact.deploy(treasury.address);
+    miner = await minerArtifact.deploy(weth.address, treasury.address);
     console.log("- Miner Initialized");
 
     const multicallArtifact = await ethers.getContractFactory("Multicall");
@@ -47,7 +51,7 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
         AddressZero,
@@ -103,7 +107,7 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
         AddressZero,
@@ -136,7 +140,7 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
         AddressZero,
@@ -153,7 +157,7 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
         AddressZero,
@@ -170,7 +174,7 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
         AddressZero,
@@ -189,7 +193,7 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
         AddressZero,
@@ -206,10 +210,10 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
-        AddressZero,
+        user0.address,
         res.epochId,
         1861439882,
         res.price,
@@ -264,7 +268,7 @@ describe("local: test0", function () {
   it("User1 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user1)
       .mine(
         AddressZero,
@@ -306,7 +310,7 @@ describe("local: test0", function () {
   it("User2 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user2)
       .mine(
         AddressZero,
@@ -364,10 +368,10 @@ describe("local: test0", function () {
   it("User0 mines", async function () {
     console.log("******************************************************");
     let res = await multicall.getMiner(AddressZero);
-    await miner
+    await multicall
       .connect(user0)
       .mine(
-        AddressZero,
+        user1.address,
         res.epochId,
         1861439882,
         res.price,

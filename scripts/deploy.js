@@ -7,6 +7,7 @@ const AddressZero = "0x0000000000000000000000000000000000000000";
 /*===========================  SETTINGS  ============================*/
 
 const TREASURY_ADDRESS = "0x7a8C895E7826F66e1094532cB435Da725dc3868f"; // Treasury Address
+const WETH_ADDRESS = "0x4200000000000000000000000000000000000006"; // WETH Address
 
 /*===========================  END SETTINGS  ========================*/
 /*===================================================================*/
@@ -24,7 +25,7 @@ let donut, miner, multicall;
 async function getContracts() {
   miner = await ethers.getContractAt(
     "contracts/Miner.sol:Miner",
-    "0x9E5eA3b8AdDA08dFb918370811c1496b114DF97e"
+    "0x9Bea9c75063095ba8C6bF60F6B50858B140bF869"
   );
   donut = await ethers.getContractAt(
     "contracts/Miner.sol:Donut",
@@ -32,7 +33,7 @@ async function getContracts() {
   );
   multicall = await ethers.getContractAt(
     "contracts/Multicall.sol:Multicall",
-    "0xDbC6028935b3b5b96451C48bD66Eff0918eA59A9"
+    "0x0c62B9A9763F4BBF42ba736440E7aC9c2B98f851"
   );
 
   console.log("Contracts Retrieved");
@@ -44,9 +45,13 @@ async function getContracts() {
 async function deployMiner() {
   console.log("Starting Miner Deployment");
   const minerArtifact = await ethers.getContractFactory("Miner");
-  const minerContract = await minerArtifact.deploy(TREASURY_ADDRESS, {
-    gasPrice: ethers.gasPrice,
-  });
+  const minerContract = await minerArtifact.deploy(
+    WETH_ADDRESS,
+    TREASURY_ADDRESS,
+    {
+      gasPrice: ethers.gasPrice,
+    }
+  );
   miner = await minerContract.deployed();
   await sleep(5000);
   console.log("Miner Deployed at:", miner.address);
@@ -57,7 +62,7 @@ async function verifyMiner() {
   await hre.run("verify:verify", {
     address: miner.address,
     contract: "contracts/Miner.sol:Miner",
-    constructorArguments: [TREASURY_ADDRESS],
+    constructorArguments: [WETH_ADDRESS, TREASURY_ADDRESS],
   });
   console.log("Miner Verified");
 }
@@ -126,7 +131,7 @@ async function main() {
   // await sleep(5000);
   // await verifyMiner();
   // await sleep(5000);
-  // await verifyMulticall();
+  await verifyMulticall();
   // await sleep(5000);
 }
 

@@ -4,6 +4,8 @@ pragma solidity 0.8.19;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Donut is ERC20, ERC20Permit, ERC20Votes {
@@ -43,6 +45,8 @@ contract Donut is ERC20, ERC20Permit, ERC20Votes {
 }
 
 contract Miner is Ownable {
+    using SafeERC20 for IERC20;
+
     uint256 public constant FEE = 2_000;
     uint256 public constant DIVISOR = 10_000;
     uint256 public constant PRECISION = 1e18;
@@ -52,10 +56,11 @@ contract Miner is Ownable {
     uint256 public constant ABS_MAX_INIT_PRICE = type(uint192).max;
 
     uint256 public constant INITIAL_DPS = 10 ether;
-    uint256 public constant HALVING_PERIOD = 2 days;
+    uint256 public constant HALVING_PERIOD = 1 days;
     uint256 public constant TAIL_DPS = 0.01 ether;
 
     address public immutable donut;
+    address public immutable quote;
     uint256 public immutable startTime;
 
     address public treasury;
@@ -72,7 +77,7 @@ contract Miner is Ownable {
 
     Slot0 internal slot0;
 
-    error Miner__InvalidPayment();
+    error Miner__InvalidMiner();
     error Miner__Reentrancy();
     error Miner__Expired();
     error Miner__EpochIdMismatch();
@@ -83,7 +88,7 @@ contract Miner is Ownable {
     error Miner__MinerPayoutFailed();
     error Miner__RefundFailed();
 
-    event Miner__Mined(address indexed miner, uint256 price, string uri);
+    event Miner__Mined(address indexed sender, address indexed miner, uint256 price, string uri);
     event Miner__Minted(address indexed miner, uint256 amount);
     event Miner__ProviderFee(address indexed provider, uint256 amount);
     event Miner__TreasuryFee(address indexed treasury, uint256 amount);
@@ -102,8 +107,9 @@ contract Miner is Ownable {
         _;
     }
 
-    constructor(address _treasury) {
+    constructor(address _quote, address _treasury) {
         if (_treasury == address(0)) revert Miner__InvalidTreasury();
+        quote = _quote;
         treasury = _treasury;
         startTime = block.timestamp;
 
@@ -115,12 +121,15 @@ contract Miner is Ownable {
         donut = address(new Donut());
     }
 
-    function mine(address provider, uint256 epochId, uint256 deadline, uint256 maxPrice, string memory uri)
-        external
-        payable
-        nonReentrant
-        returns (uint256 price)
-    {
+    function mine(
+        address miner,
+        address provider,
+        uint256 epochId,
+        uint256 deadline,
+        uint256 maxPrice,
+        string memory uri
+    ) external nonReentrant returns (uint256 price) {
+        if (miner == address(0)) revert Miner__InvalidMiner();
         if (block.timestamp > deadline) revert Miner__Expired();
 
         Slot0 memory slot0Cache = slot0;
@@ -129,7 +138,6 @@ contract Miner is Ownable {
 
         price = _getPriceFromCache(slot0Cache);
         if (price > maxPrice) revert Miner__MaxPriceExceeded();
-        if (msg.value < price) revert Miner__InvalidPayment();
 
         if (price > 0) {
             uint256 totalFee = price * FEE / DIVISOR;
@@ -145,24 +153,15 @@ contract Miner is Ownable {
             }
 
             if (providerFee > 0) {
-                (bool ps,) = payable(provider).call{value: providerFee}("");
-                if (!ps) revert Miner__ProviderPayoutFailed();
+                IERC20(quote).safeTransferFrom(msg.sender, provider, providerFee);
                 emit Miner__ProviderFee(provider, providerFee);
             }
 
-            (bool ts,) = payable(treasury).call{value: treasuryFee}("");
-            if (!ts) revert Miner__TreasuryPayoutFailed();
+            IERC20(quote).safeTransferFrom(msg.sender, treasury, treasuryFee);
             emit Miner__TreasuryFee(treasury, treasuryFee);
 
-            (bool ms,) = payable(slot0Cache.miner).call{value: minerFee}("");
-            if (!ms) revert Miner__MinerPayoutFailed();
+            IERC20(quote).safeTransferFrom(msg.sender, slot0Cache.miner, minerFee);
             emit Miner__MinerFee(slot0Cache.miner, minerFee);
-        }
-
-        uint256 refund = msg.value - price;
-        if (refund > 0) {
-            (bool rs,) = payable(msg.sender).call{value: refund}("");
-            if (!rs) revert Miner__RefundFailed();
         }
 
         uint256 newInitPrice = price * PRICE_MULTIPLIER / PRECISION;
@@ -184,13 +183,13 @@ contract Miner is Ownable {
         }
         slot0Cache.initPrice = uint192(newInitPrice);
         slot0Cache.startTime = uint40(block.timestamp);
-        slot0Cache.miner = msg.sender;
+        slot0Cache.miner = miner;
         slot0Cache.dps = _getDpsFromTime(block.timestamp);
         slot0Cache.uri = uri;
 
         slot0 = slot0Cache;
 
-        emit Miner__Mined(msg.sender, price, uri);
+        emit Miner__Mined(msg.sender, miner, price, uri);
 
         return price;
     }

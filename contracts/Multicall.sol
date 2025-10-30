@@ -2,6 +2,12 @@
 pragma solidity 0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+interface IWETH {
+    function deposit() external payable;
+}
 
 interface IMiner {
     struct Slot0 {
@@ -15,14 +21,26 @@ interface IMiner {
     }
 
     function donut() external view returns (address);
+    function quote() external view returns (address);
     function getPrice() external view returns (uint256);
     function getDps() external view returns (uint256);
     function getSlot0() external view returns (Slot0 memory);
+    function mine(
+        address miner,
+        address provider,
+        uint256 epochId,
+        uint256 deadline,
+        uint256 maxPrice,
+        string memory uri
+    ) external returns (uint256 price);
 }
 
-contract Multicall {
+contract Multicall is Ownable {
+    using SafeERC20 for IERC20;
+
     address public immutable miner;
     address public immutable donut;
+    address public immutable quote;
 
     struct MinerState {
         uint16 epochId;
@@ -41,6 +59,22 @@ contract Multicall {
     constructor(address _miner) {
         miner = _miner;
         donut = IMiner(miner).donut();
+        quote = IMiner(miner).quote();
+    }
+
+    function mine(address provider, uint256 epochId, uint256 deadline, uint256 maxPrice, string memory uri)
+        external
+        payable
+    {
+        IWETH(quote).deposit{value: msg.value}();
+        IERC20(quote).safeApprove(miner, 0);
+        IERC20(quote).safeApprove(miner, msg.value);
+        IMiner(miner).mine(msg.sender, provider, epochId, deadline, maxPrice, uri);
+    }
+
+    function withdraw(address to) external onlyOwner {
+        (bool success,) = to.call{value: address(this).balance}("");
+        require(success, "Multicall: Withdraw failed");
     }
 
     function getMiner(address account) external view returns (MinerState memory state) {
