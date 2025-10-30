@@ -56,7 +56,7 @@ contract Miner is Ownable {
     uint256 public constant ABS_MAX_INIT_PRICE = type(uint192).max;
 
     uint256 public constant INITIAL_DPS = 10 ether;
-    uint256 public constant HALVING_PERIOD = 1 days;
+    uint256 public constant HALVING_PERIOD = 10 days;
     uint256 public constant TAIL_DPS = 0.01 ether;
 
     address public immutable donut;
