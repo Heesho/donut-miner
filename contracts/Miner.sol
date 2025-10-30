@@ -148,7 +148,7 @@ contract Miner is Ownable {
             if (provider == address(0)) {
                 treasuryFee = totalFee;
             } else {
-                providerFee = totalFee / 2;
+                providerFee = totalFee / 4;
                 treasuryFee = totalFee - providerFee;
             }
 

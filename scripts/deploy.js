@@ -131,7 +131,7 @@ async function main() {
   // await sleep(5000);
   // await verifyMiner();
   // await sleep(5000);
-  await verifyMulticall();
+  // await verifyMulticall();
   // await sleep(5000);
 }
 
