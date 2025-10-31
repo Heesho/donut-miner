@@ -53,6 +53,7 @@ contract Multicall is Ownable {
         address miner;
         string uri;
         uint256 ethBalance;
+        uint256 wethBalance;
         uint256 donutBalance;
     }
 
@@ -89,6 +90,7 @@ contract Multicall is Ownable {
         state.miner = slot0.miner;
         state.uri = slot0.uri;
         state.ethBalance = account == address(0) ? 0 : account.balance;
+        state.wethBalance = account == address(0) ? 0 : IERC20(quote).balanceOf(account);
         state.donutBalance = account == address(0) ? 0 : IERC20(donut).balanceOf(account);
         return state;
     }
