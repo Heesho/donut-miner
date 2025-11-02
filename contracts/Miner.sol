@@ -83,10 +83,6 @@ contract Miner is Ownable {
     error Miner__EpochIdMismatch();
     error Miner__MaxPriceExceeded();
     error Miner__InvalidTreasury();
-    error Miner__ProviderPayoutFailed();
-    error Miner__TreasuryPayoutFailed();
-    error Miner__MinerPayoutFailed();
-    error Miner__RefundFailed();
 
     event Miner__Mined(address indexed sender, address indexed miner, uint256 price, string uri);
     event Miner__Minted(address indexed miner, uint256 amount);
