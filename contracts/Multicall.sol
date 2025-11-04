@@ -86,7 +86,7 @@ contract Multicall is Ownable {
         address paymentToken;
         uint256 price;
         uint256 paymentTokenPrice;
-        uint256 wethAcummulated;
+        uint256 wethAccumulated;
         uint256 wethBalance;
         uint256 paymentTokenBalance;
     }
@@ -150,7 +150,7 @@ contract Multicall is Ownable {
         state.paymentToken = IAuction(auction).paymentToken();
         state.price = IAuction(auction).getPrice();
         state.paymentTokenPrice = IERC20(quote).balanceOf(state.paymentToken) * 2e18 / IERC20(state.paymentToken).totalSupply();
-        state.wethAcummulated = IERC20(quote).balanceOf(auction);
+        state.wethAccumulated = IERC20(quote).balanceOf(auction);
         state.wethBalance = account == address(0) ? 0 : IERC20(quote).balanceOf(account);
         state.paymentTokenBalance = account == address(0) ? 0 : IERC20(state.paymentToken).balanceOf(account);
         return state; 
