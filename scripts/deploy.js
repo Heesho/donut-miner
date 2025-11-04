@@ -1,6 +1,8 @@
 const { ethers } = require("hardhat");
 const { utils, BigNumber } = require("ethers");
 const hre = require("hardhat");
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+const convert = (amount, decimals) => ethers.utils.parseUnits(amount, decimals);
 const AddressZero = "0x0000000000000000000000000000000000000000";
 
 /*===================================================================*/
@@ -8,16 +10,17 @@ const AddressZero = "0x0000000000000000000000000000000000000000";
 
 const TREASURY_ADDRESS = "0x7a8C895E7826F66e1094532cB435Da725dc3868f"; // Treasury Address
 const WETH_ADDRESS = "0x4200000000000000000000000000000000000006"; // WETH Address
+const LP_ADDRESS = "0xc3B9bd6F7d4bFcc22696a7bC1CC83948a33d7FAb"; // LP Address
+const ADDRESS_DEAD = "0x000000000000000000000000000000000000dEaD";
+const AUCTION_PERIOD = 86400; // 1 day
+const PRICE_MULTIPLIER = convert("1.2", 18); // 120%
+const MIN_INIT_PRICE = convert("1", 18); // 1 LP
 
 /*===========================  END SETTINGS  ========================*/
 /*===================================================================*/
 
-// Constants
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
-const convert = (amount, decimals) => ethers.utils.parseUnits(amount, decimals);
-
 // Contract Variables
-let donut, miner, multicall;
+let donut, miner, auction, multicall;
 
 /*===================================================================*/
 /*===========================  CONTRACT DATA  =======================*/
@@ -33,9 +36,12 @@ async function getContracts() {
   );
   multicall = await ethers.getContractAt(
     "contracts/Multicall.sol:Multicall",
-    "0x0d6fC0Cf23F0B78B1280c4037cA9B47F13Ca19e4"
+    "0x0Ec081B980dEdF1A9253e66ce5Dee3Ee8a201f2a"
   );
-
+  auction = await ethers.getContractAt(
+    "contracts/Auction.sol:Auction",
+    "0xA0Da470d4612B1B90E96Ad43611b4C1534c7a884"
+  );
   console.log("Contracts Retrieved");
 }
 
@@ -55,6 +61,15 @@ async function deployMiner() {
   miner = await minerContract.deployed();
   await sleep(5000);
   console.log("Miner Deployed at:", miner.address);
+}
+
+async function verifyDonut() {
+  console.log("Starting Donut Verification");
+  await hre.run("verify:verify", {
+    address: donut.address,
+    contract: "contracts/Miner.sol:Donut",
+  });
+  console.log("Donut Verified");
 }
 
 async function verifyMiner() {
@@ -88,13 +103,40 @@ async function verifyMulticall() {
   console.log("Multicall Verified");
 }
 
-async function verifyDonut() {
-  console.log("Starting Donut Verification");
+async function deployAuction() {
+  console.log("Starting Auction Deployment");
+  const auctionArtifact = await ethers.getContractFactory("Auction");
+  const auctionContract = await auctionArtifact.deploy(
+    MIN_INIT_PRICE,
+    LP_ADDRESS,
+    ADDRESS_DEAD,
+    AUCTION_PERIOD,
+    PRICE_MULTIPLIER,
+    MIN_INIT_PRICE,
+    {
+      gasPrice: ethers.gasPrice,
+    }
+  );
+  auction = await auctionContract.deployed();
+  await sleep(5000);
+  console.log("Auction Deployed at:", auction.address);
+}
+
+async function verifyAuction() {
+  console.log("Starting Auction Verification");
   await hre.run("verify:verify", {
-    address: donut.address,
-    contract: "contracts/Miner.sol:Donut",
+    address: auction.address,
+    contract: "contracts/Auction.sol:Auction",
+    constructorArguments: [
+      MIN_INIT_PRICE,
+      LP_ADDRESS,
+      ADDRESS_DEAD,
+      AUCTION_PERIOD,
+      PRICE_MULTIPLIER,
+      MIN_INIT_PRICE,
+    ],
   });
-  console.log("Donut Verified");
+  console.log("Auction Verified");
 }
 
 async function printDeployment() {
@@ -117,6 +159,7 @@ async function main() {
 
   // console.log("Starting System Deployment");
   // await deployMiner();
+  // await deployAuction();
   // await deployMulticall();
   // await printDeployment();
 
@@ -133,6 +176,20 @@ async function main() {
   // await sleep(5000);
   // await verifyMulticall();
   // await sleep(5000);
+  // await verifyAuction();
+  // await sleep(5000);
+
+  //===================================================================
+  // Transactions
+  //===================================================================
+
+  // set auction on multicall
+  // await multicall.setAuction(auction.address);
+  // console.log("Auction set on Multicall");
+
+  // set treasury on miner to auction
+  await miner.setTreasury(auction.address);
+  console.log("Treasury set on Miner to Auction");
 }
 
 main()
