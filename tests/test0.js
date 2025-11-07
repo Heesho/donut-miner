@@ -590,4 +590,88 @@ describe("local: test0", function () {
     let res = await weth.balanceOf(user3.address);
     console.log("WETH balance in User3 Address: ", divDec(res));
   });
+
+  it("Forward time", async function () {
+    console.log("******************************************************");
+    await network.provider.send("evm_increaseTime", [86400 * 500]);
+    await network.provider.send("evm_mine");
+    console.log("- time forwarded");
+  });
+
+  it("User0 mines", async function () {
+    console.log("******************************************************");
+    let res = await multicall.getMiner(AddressZero);
+    await multicall
+      .connect(user0)
+      .mine(
+        user1.address,
+        res.epochId,
+        1861439882,
+        res.price,
+        "https://example.com",
+        {
+          value: res.price,
+        }
+      );
+    res = await multicall.getMiner(AddressZero);
+    expect(res.miner).to.equal(user0.address);
+  });
+
+  it("Miner state", async function () {
+    console.log("******************************************************");
+    const minerStateUser = await multicall.getMiner(user0.address);
+    const minerStateTreasury = await multicall.getMiner(treasury.address);
+    const { timestamp } = await ethers.provider.getBlock("latest");
+    console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
+    console.log("Price: ", divDec(minerStateUser.price));
+    console.log("DPS: ", divDec(minerStateUser.nextDps));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
+  });
+
+  it("Forward time", async function () {
+    console.log("******************************************************");
+    await network.provider.send("evm_increaseTime", [86400 * 1000]);
+    await network.provider.send("evm_mine");
+    console.log("- time forwarded");
+  });
+
+  it("User0 mines", async function () {
+    console.log("******************************************************");
+    let res = await multicall.getMiner(AddressZero);
+    await multicall
+      .connect(user0)
+      .mine(
+        user1.address,
+        res.epochId,
+        1961439882,
+        res.price,
+        "https://example.com",
+        {
+          value: res.price,
+        }
+      );
+    res = await multicall.getMiner(AddressZero);
+    expect(res.miner).to.equal(user0.address);
+  });
+
+  it("Miner state", async function () {
+    console.log("******************************************************");
+    const minerStateUser = await multicall.getMiner(user0.address);
+    const minerStateTreasury = await multicall.getMiner(treasury.address);
+    const { timestamp } = await ethers.provider.getBlock("latest");
+    console.log("Day: ", (timestamp - (await miner.startTime())) / 86400);
+    console.log("Price: ", divDec(minerStateUser.price));
+    console.log("DPS: ", divDec(minerStateUser.nextDps));
+    console.log("User DONUT balance: ", divDec(minerStateUser.donutBalance));
+    console.log("User ETH balance: ", divDec(minerStateUser.ethBalance));
+    console.log(
+      "Treasury ETH balance: ",
+      divDec(minerStateTreasury.ethBalance)
+    );
+  });
 });

@@ -8,9 +8,10 @@ const AddressZero = "0x0000000000000000000000000000000000000000";
 /*===================================================================*/
 /*===========================  SETTINGS  ============================*/
 
-const TREASURY_ADDRESS = "0x7a8C895E7826F66e1094532cB435Da725dc3868f"; // Treasury Address
+const MULTISIG_ADDRESS = "0xeE0CB49D2805DA6bC0A979ddAd87bb793fbB765E"; // Multisig Address
+const TREASURY_ADDRESS = "0x3539bccca86de11575eb70997b136f9b30d21751"; // Treasury Address
 const WETH_ADDRESS = "0x4200000000000000000000000000000000000006"; // WETH Address
-const LP_ADDRESS = "0xc3B9bd6F7d4bFcc22696a7bC1CC83948a33d7FAb"; // LP Address
+const LP_ADDRESS = "0x000000000000000000000000000000000000dEaD"; // LP Address
 const ADDRESS_DEAD = "0x000000000000000000000000000000000000dEaD";
 const AUCTION_PERIOD = 86400; // 1 day
 const PRICE_MULTIPLIER = convert("1.2", 18); // 120%
@@ -28,7 +29,7 @@ let donut, miner, auction, multicall;
 async function getContracts() {
   miner = await ethers.getContractAt(
     "contracts/Miner.sol:Miner",
-    "0x9Bea9c75063095ba8C6bF60F6B50858B140bF869"
+    "0xF69614F4Ee8D4D3879dd53d5A039eB3114C794F6"
   );
   donut = await ethers.getContractAt(
     "contracts/Miner.sol:Donut",
@@ -36,12 +37,12 @@ async function getContracts() {
   );
   multicall = await ethers.getContractAt(
     "contracts/Multicall.sol:Multicall",
-    "0xe03a89eb8b75d73Caf762a81dA260106fD42F18A"
+    "0x7a85CA4b4E15df2a7b927Fa56edb050d2399B34c"
   );
-  auction = await ethers.getContractAt(
-    "contracts/Auction.sol:Auction",
-    "0xA0Da470d4612B1B90E96Ad43611b4C1534c7a884"
-  );
+  // auction = await ethers.getContractAt(
+  //   "contracts/Auction.sol:Auction",
+  //   ""
+  // );
   console.log("Contracts Retrieved");
 }
 
