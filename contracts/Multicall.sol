@@ -134,6 +134,7 @@ contract Multicall is Ownable {
         state.glazed = slot0.dps * (block.timestamp - slot0.startTime);
         state.price = IMiner(miner).getPrice();
         state.dps = slot0.dps;
+        state.nextDps = IMiner(miner).getDps();
         if (auction != address(0)) {
             address paymentToken = IAuction(auction).paymentToken();
             uint256 quoteInLP = IERC20(quote).balanceOf(paymentToken);

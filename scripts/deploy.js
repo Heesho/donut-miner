@@ -37,7 +37,7 @@ async function getContracts() {
   );
   multicall = await ethers.getContractAt(
     "contracts/Multicall.sol:Multicall",
-    "0x0a0C653F3FB69906dFC77b845a24c285071d3144"
+    "0x3ec144554b484C6798A683E34c8e8E222293f323"
   );
   auction = await ethers.getContractAt(
     "contracts/Auction.sol:Auction",
@@ -185,8 +185,8 @@ async function main() {
   //===================================================================
 
   // set auction on multicall
-  // await multicall.setAuction(auction.address);
-  // console.log("Auction set on Multicall");
+  await multicall.setAuction(auction.address);
+  console.log("Auction set on Multicall");
 
   // set treasury on miner to auction
   // await miner.setTreasury(auction.address);
