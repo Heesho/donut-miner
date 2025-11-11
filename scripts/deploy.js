@@ -185,8 +185,8 @@ async function main() {
   //===================================================================
 
   // set auction on multicall
-  await multicall.setAuction(auction.address);
-  console.log("Auction set on Multicall");
+  // await multicall.setAuction(auction.address);
+  // console.log("Auction set on Multicall");
 
   // set treasury on miner to auction
   // await miner.setTreasury(auction.address);
