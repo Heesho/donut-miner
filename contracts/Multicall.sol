@@ -72,6 +72,7 @@ contract Multicall is Ownable {
         uint256 price;
         uint256 dps;
         uint256 nextDps;
+        uint256 donutPrice;
         address miner;
         string uri;
         uint256 ethBalance;
@@ -133,7 +134,12 @@ contract Multicall is Ownable {
         state.glazed = slot0.dps * (block.timestamp - slot0.startTime);
         state.price = IMiner(miner).getPrice();
         state.dps = slot0.dps;
-        state.nextDps = IMiner(miner).getDps();
+        if (auction != address(0)) {
+            address paymentToken = IAuction(auction).paymentToken();
+            uint256 quoteInLP = IERC20(quote).balanceOf(paymentToken);
+            uint256 donutInLP = IERC20(donut).balanceOf(paymentToken);
+            state.donutPrice = donutInLP == 0 ? 0 : quoteInLP * 1e18 / donutInLP;
+        }
         state.miner = slot0.miner;
         state.uri = slot0.uri;
         state.ethBalance = account == address(0) ? 0 : account.balance;

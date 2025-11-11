@@ -11,7 +11,7 @@ const AddressZero = "0x0000000000000000000000000000000000000000";
 const MULTISIG_ADDRESS = "0xeE0CB49D2805DA6bC0A979ddAd87bb793fbB765E"; // Multisig Address
 const TREASURY_ADDRESS = "0x3539bccca86de11575eb70997b136f9b30d21751"; // Treasury Address
 const WETH_ADDRESS = "0x4200000000000000000000000000000000000006"; // WETH Address
-const LP_ADDRESS = "0x000000000000000000000000000000000000dEaD"; // LP Address
+const LP_ADDRESS = "0xD1DbB2E56533C55C3A637D13C53aeEf65c5D5703"; // LP Address
 const ADDRESS_DEAD = "0x000000000000000000000000000000000000dEaD";
 const AUCTION_PERIOD = 86400; // 1 day
 const PRICE_MULTIPLIER = convert("1.2", 18); // 120%
@@ -37,12 +37,12 @@ async function getContracts() {
   );
   multicall = await ethers.getContractAt(
     "contracts/Multicall.sol:Multicall",
-    "0x7a85CA4b4E15df2a7b927Fa56edb050d2399B34c"
+    "0x0a0C653F3FB69906dFC77b845a24c285071d3144"
   );
-  // auction = await ethers.getContractAt(
-  //   "contracts/Auction.sol:Auction",
-  //   ""
-  // );
+  auction = await ethers.getContractAt(
+    "contracts/Auction.sol:Auction",
+    "0xC23E316705Feef0922F0651488264db90133ED38"
+  );
   console.log("Contracts Retrieved");
 }
 
@@ -191,6 +191,10 @@ async function main() {
   // set treasury on miner to auction
   // await miner.setTreasury(auction.address);
   // console.log("Treasury set on Miner to Auction");
+
+  // set ownership of miner to multisig
+  // await miner.transferOwnership(MULTISIG_ADDRESS);
+  // console.log("Ownership of Miner transferred to Multisig");
 }
 
 main()
